@@ -5,7 +5,7 @@
 Decrypt and verify data to get user info
 
 ```java
-import com.bakaoh.zpi.ZpiIFind;
+import ZpiIFind;
 ...
 
 String data = "get from query param `d`";
