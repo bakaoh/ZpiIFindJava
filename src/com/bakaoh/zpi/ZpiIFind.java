@@ -17,7 +17,6 @@ import java.util.Base64;
 import javax.crypto.Cipher;
 
 public class ZpiIFind {
-    private static int SIGN_LEN = 700;
 
     private static String getKey(String filename) throws IOException {
         // Read key from file
@@ -93,12 +92,16 @@ public class ZpiIFind {
     public static String signAndEncrypt(String message, PublicKey receiverPublicKey, PrivateKey senderPrivateKey) throws IOException, GeneralSecurityException {
         String encMess = encrypt(message, receiverPublicKey);
         String sig = sign(senderPrivateKey, message);
-        return sig + encMess;
+        return sig + "_" + encMess;
     }
 
     public static String decryptAndVerify(String text, PrivateKey receiverPrivateKey, PublicKey senderPublicKey) throws Exception {
-        String sig = text.substring(0, SIGN_LEN);
-        String encMess = text.substring(SIGN_LEN, text.length());
+        String[] parts = text.split("_");
+        if (parts.length != 2) {
+            throw new Exception("Invalid data");
+        }
+        String sig = parts[0];
+        String encMess = parts[1];
         String message = decrypt(encMess, receiverPrivateKey);
         if (!verify(senderPublicKey, message, sig)) {
             throw new Exception("Signature does not match");
